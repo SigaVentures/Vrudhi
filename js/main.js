@@ -122,13 +122,25 @@
   /* ---------- Gallery filters ---------- */
   var filters = document.querySelectorAll('.filter');
   var items = Array.prototype.slice.call(document.querySelectorAll('.g-item'));
+  var LIMIT = 8, expanded = false, activeCat = 'all';
+  var more = document.getElementById('see-more');
+  function applyFilter() {
+    var n = 0;
+    items.forEach(function (it) {
+      var match = activeCat === 'all' || it.getAttribute('data-cat') === activeCat;
+      it.hidden = !match || (activeCat === 'all' && !expanded && ++n > LIMIT);
+    });
+    more.parentNode.hidden = !(activeCat === 'all' && !expanded);
+  }
   filters.forEach(function (b) {
     b.addEventListener('click', function () {
-      var cat = b.getAttribute('data-filter');
+      activeCat = b.getAttribute('data-filter');
       filters.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-      items.forEach(function (it) { it.hidden = !(cat === 'all' || it.getAttribute('data-cat') === cat); });
+      applyFilter();
     });
   });
+  more.addEventListener('click', function () { expanded = true; applyFilter(); });
+  applyFilter();
 
   /* ---------- Lightbox ---------- */
   var lb = document.getElementById('lightbox');
